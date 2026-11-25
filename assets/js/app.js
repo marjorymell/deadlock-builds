@@ -30,13 +30,13 @@ function renderSlots() {
     for (let i = 0; i < max[k]; i++) {
       const h = heroById[state[k][i]];
       const slot = `<button class="slot ${k} ${h ? 'filled' : ''} ${active === k && (h ? false : i === state[k].length) ? 'active' : ''}" data-k="${k}" data-i="${i}" aria-label="${h ? esc(h.name) + ' (clique para remover)' : 'Vazio'}">${h ? `<img src="${esc(h.img)}" alt=""><span>${esc(h.name)}</span>` : '<span>+</span>'}</button>`;
-      if (k === 'enemy') html += `<div class="eslot">${slot}${h ? `<button class="threat ${threat.has(h.id) ? 'on' : ''}" data-t="${h.id}" aria-pressed="${threat.has(h.id)}" title="Marque quem está com mais souls no placar (Tab)">${threat.has(h.id) ? 'Forte' : 'Marcar forte'}</button>` : ''}</div>`;
+      if (k === 'enemy') html += `<div class="eslot">${slot}${h ? `<button class="threat ${threat.has(h.id) ? 'on' : ''}" data-t="${h.id}" aria-pressed="${threat.has(h.id)}" title="Marque quem está com mais souls no placar (Tab)">${threat.has(h.id) ? 'Forte ✓' : 'Forte?'}</button>` : ''}</div>`;
       else html += slot;
     }
     $('s-' + k).innerHTML = html;
   }
   const names = { me: 'o seu herói', ally: 'um aliado', enemy: 'um inimigo' };
-  $('pickhint').textContent = `Clique num herói para adicionar ${names[active]}. Clique num espaço para trocar de time ou num herói já escolhido para remover. Use "Marcar forte" nos inimigos com mais souls.`;
+  $('pickhint').textContent = `Clique num herói para adicionar ${names[active]}. Clique num espaço para trocar de time ou num herói já escolhido para remover. Use "Forte?" nos inimigos com mais souls no placar (Tab).`;
   renderGrid();
 }
 
@@ -140,8 +140,39 @@ function itemRow(id, right, extra) {
   return `<div class="it ${esc(it.slot)}"><img src="${esc(it.img)}" alt=""><div><div class="n">${esc(it.name)}</div><div class="m">${it.cost} souls${extra ? ' · ' + extra : ''}</div></div><div class="v">${right}</div></div>`;
 }
 
+/* ---------- build dos pros (partidas ranqueadas de rank alto) ---------- */
+let proRun = 0;
+const heroTotals = b => cache['hs' + b] ||= getJ(`/v1/analytics/hero-stats?match_mode=ranked&min_average_badge=${b}`);
+const proItems = (me, b) => cache['pro' + me + '_' + b] ||= getJ(`/v1/analytics/item-stats?hero_ids=${me}&match_mode=ranked&min_average_badge=${b}&min_matches=10`);
+async function loadPro(me, b) {
+  const [hs, rows] = await Promise.all([heroTotals(b), proItems(me, b)]);
+  return { tot: hs.find(x => x.hero_id === me)?.matches || 0, rows };
+}
+async function runPro(me) {
+  const id = ++proRun;
+  if (!me) { $('procard').style.display = 'none'; return; }
+  $('procard').style.display = 'block';
+  if (!$('pro').children.length) $('pro').innerHTML = '<div class="hint"><span class="spin"></span>Carregando…</div>';
+  try {
+    let d = await loadPro(me, 111), label = 'Eternus';
+    if (d.tot < 300) { d = await loadPro(me, 101); label = 'Ascendant e Eternus'; }
+    if (id !== proRun) return;
+    if (d.tot < 100) { $('prohint').textContent = 'Ainda não há partidas suficientes de jogadores de rank alto com este herói.'; $('pro').innerHTML = ''; return; }
+    const list = d.rows.filter(r => items[r.item_id] && r.matches / d.tot >= 0.25).sort((a, b) => a.avg_buy_time_s - b.avg_buy_time_s);
+    const phases = [['Início', 'até 10 min', 0, 600], ['Meio', '10 a 20 min', 600, 1200], ['Final', 'depois de 20 min', 1200, Infinity]];
+    $('prohint').textContent = `O que jogadores de rank ${label} compram com ${heroById[me].name}, na ordem em que costumam comprar. Baseado em ${d.tot.toLocaleString('pt-BR')} partidas ranqueadas dos últimos 30 dias.`;
+    $('pro').innerHTML = phases.map(([name, sub, a, b]) => {
+      const ph = list.filter(r => r.avg_buy_time_s >= a && r.avg_buy_time_s < b).sort((x, y) => y.matches - x.matches).slice(0, 6).sort((x, y) => x.avg_buy_time_s - y.avg_buy_time_s);
+      return `<div class="tier"><h3>${name} · ${sub}</h3>${ph.map(r => itemRow(r.item_id, `${Math.round(r.matches / d.tot * 100)}%`, `~${Math.max(1, Math.round(r.avg_buy_time_s / 60))} min${r.sold / r.matches > 0.5 ? ' · vendem depois' : ''}`)).join('') || '<div class="hint">—</div>'}</div>`;
+    }).join('');
+  } catch (err) {
+    if (id === proRun) { $('prohint').textContent = 'Não consegui carregar a build dos pros agora (' + err.message + ').'; $('pro').innerHTML = ''; }
+  }
+}
+
 async function run() {
   const me = state.me[0];
+  runPro(me);
   if (!me) { $('results').style.display = 'none'; setStatus($('status'), 'Escolha o seu herói para começar.'); return; }
   if (!state.enemy.length) { $('results').style.display = 'none'; setStatus($('status'), 'Agora escolha pelo menos um inimigo.'); return; }
   for (const t of [...threat]) if (!state.enemy.includes(t)) threat.delete(t);

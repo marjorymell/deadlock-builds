@@ -13,10 +13,11 @@ Hero and item stats come from [deadlock-api.com](https://deadlock-api.com), a fr
 ## Features
 
 - **Items against this team.** Items that perform better than usual against the enemies in the match, with the reason (*good against Haze, Wraith*).
+- **Pro build.** What top-rank players (Eternus, falling back to Ascendant+ for less played heroes) buy with your hero, split into early, mid and late game, in buy order, with pick rate and typical buy time.
 - **Base build.** The most bought items for your hero, by tier.
 - **Avoid this match.** Common base-build items that do worse than usual against this team.
 - **Matchups.** Your hero's win rate against each enemy and with each ally.
-- **Mark as strong.** During the match, check the scoreboard (Tab) and mark the enemies with the most souls. They weigh 3× in the recommendations.
+- **Mark as strong.** During the match, check the scoreboard (Tab) and click **Forte?** under the enemies with the most souls. They weigh 3× in the recommendations.
 - **Match mode filter.** Normal (unranked) matches by default, or ranked, or both. In ranked you can also filter by rank to use only matches from players around your level.
 
 ## How it works
@@ -39,7 +40,7 @@ The second term removes the effect of the matchup itself: if your hero already w
 1. Open the [live site](https://marjorymell.github.io/deadlock-builds/), or `index.html` in any browser.
 2. Pick your hero. It is remembered for next time.
 3. When the match starts, type the first letters of each enemy and press **Enter**.
-4. Mid-match, use **Mark as strong** on the enemies who are ahead.
+4. Mid-match, click **Forte?** under the enemies who are ahead.
 
 To run it locally there is nothing to install:
 
