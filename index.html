@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Builds de Deadlock adaptadas ao time inimigo, com dados atualizados da deadlock-api.">
+<title>Deadlock Build Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>Deadlock Build Lab</h1>
+      <p class="sub">Build base do seu herói + itens que funcionam melhor contra o time inimigo desta partida.</p>
+    </div>
+    <label class="row hint">Dados de
+      <select id="rank">
+        <option value="">todos os ranks</option>
+        <option value="0-56">Initiate a Ritualist</option>
+        <option value="60-86">Emissary a Oracle</option>
+        <option value="90-116">Phantom a Eternus</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="card">
+    <h2>Partida ao vivo</h2>
+    <div class="row">
+      <input id="steam" placeholder="Seu nome na Steam, link do perfil ou Steam ID" autocomplete="off">
+      <button id="find" class="main">Buscar minha partida</button>
+      <label class="row hint"><input type="checkbox" id="auto" style="min-height:0;width:18px;height:18px"> repetir a cada 30 s</label>
+    </div>
+    <div id="choices" class="choices"></div>
+    <div id="lstatus" class="status"></div>
+  </div>
+
+  <div class="card">
+    <h2>Heróis da partida</h2>
+    <div class="teams">
+      <div class="lbl">Você</div><div class="slots" id="s-me"></div>
+      <div class="lbl">Aliados</div><div class="slots" id="s-ally"></div>
+      <div class="lbl">Inimigos</div><div class="slots" id="s-enemy"></div>
+    </div>
+    <div class="pickhead">
+      <input id="filter" placeholder="Digite o nome do herói e Enter para escolher" autocomplete="off">
+      <button id="clear">Limpar aliados e inimigos</button>
+    </div>
+    <div class="hint" id="pickhint"></div>
+    <div class="grid" id="grid"><div class="empty"><span class="spin"></span>Carregando heróis…</div></div>
+  </div>
+
+  <div id="status" class="status"></div>
+
+  <div class="results" id="results">
+    <div class="card">
+      <h2>Matchups</h2>
+      <div class="mu" id="mu"></div>
+      <p class="hint">Taxa de vitória do seu herói contra cada inimigo e junto com cada aliado (todas as lanes).</p>
+    </div>
+    <div class="card">
+      <h2>Itens recomendados contra este time</h2>
+      <div class="legend"><span><i style="background:var(--weapon)"></i>Arma</span><span><i style="background:var(--vitality)"></i>Vitalidade</span><span><i style="background:var(--spirit)"></i>Spirit</span><span>+pp = quanto o item ganha mais que o normal contra esses inimigos</span></div>
+      <div class="tiers" id="counters"></div>
+    </div>
+    <div class="two">
+      <div class="card">
+        <h2>Build base do herói</h2>
+        <p class="hint" style="margin-top:0">Os itens mais comprados com este herói, por tier.</p>
+        <div class="tiers" id="base" style="grid-template-columns:repeat(2,minmax(0,1fr))"></div>
+      </div>
+      <div class="card">
+        <h2>Evite nesta partida</h2>
+        <p class="hint" style="margin-top:0">Itens comuns da build base que rendem pior que o normal contra esses inimigos.</p>
+        <div id="avoid"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>Dados: <a href="https://deadlock-api.com" target="_blank" rel="noopener">deadlock-api.com</a> (partidas dos últimos 30 dias, atualizados continuamente). São estatísticas de correlação: use como guia, não como regra. A busca ao vivo só acha partidas que aparecem na aba "Assistir" do jogo (cerca das 200 em destaque); se não achar, escolha os heróis clicando.</footer>
+</div>
+
+<script src="assets/js/app.js"></script>
+</body>
+</html>
