@@ -16,7 +16,15 @@
       <h1>Deadlock Build Lab</h1>
       <p class="sub">Build base do seu herói + itens que funcionam melhor contra o time inimigo desta partida.</p>
     </div>
-    <label class="row hint">Dados de
+    <div class="row">
+    <label class="row hint">Partidas
+      <select id="mode">
+        <option value="unranked">normais (não ranqueadas)</option>
+        <option value="ranked">ranqueadas</option>
+        <option value="ranked,unranked">todas</option>
+      </select>
+    </label>
+    <label class="row hint" id="rankwrap">Rank
       <select id="rank">
         <option value="">todos os ranks</option>
         <option value="0-56">Initiate a Ritualist</option>
@@ -24,6 +32,7 @@
         <option value="90-116">Phantom a Eternus</option>
       </select>
     </label>
+    </div>
   </div>
 
   <div class="card">

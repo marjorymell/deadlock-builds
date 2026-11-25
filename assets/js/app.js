@@ -16,7 +16,13 @@ const cache = {};
 const setStatus = (el, msg, err) => { el.className = 'status' + (err ? ' err' : ''); el.innerHTML = msg; };
 const pct = x => (x * 100).toFixed(1) + '%';
 const pp = x => (x >= 0 ? '+' : '') + (x * 100).toFixed(1) + 'pp';
-const rankQ = () => { const v = $('rank').value; if (!v) return ''; const [a, b] = v.split('-'); return `&min_average_badge=${a}&max_average_badge=${b}`; };
+const rankQ = () => {
+  const mode = $('mode').value, v = mode === 'ranked' ? $('rank').value : '';
+  let q = '&match_mode=' + mode;
+  if (v) { const [a, b] = v.split('-'); q += `&min_average_badge=${a}&max_average_badge=${b}`; }
+  return q;
+};
+const syncRank = () => { $('rankwrap').style.display = $('mode').value === 'ranked' ? '' : 'none'; };
 
 function renderSlots() {
   for (const k of ['me', 'ally', 'enemy']) {
@@ -76,6 +82,7 @@ $('filter').addEventListener('keydown', e => {
 });
 $('clear').addEventListener('click', () => { state.ally = []; state.enemy = []; threat.clear(); active = nextActive(); renderSlots(); schedule(); });
 $('rank').addEventListener('change', () => { store.set('rank', $('rank').value); schedule(); });
+$('mode').addEventListener('change', () => { store.set('mode', $('mode').value); syncRank(); schedule(); });
 
 /* ---------- Steam / partida ao vivo ---------- */
 function parseSteam(v) {
@@ -146,6 +153,7 @@ async function run() {
     const vsP = state.enemy.map(e => itemStats(`hero_ids=${me}&enemy_hero_ids=${e}&min_matches=30${rq}`));
     const [base, vs, counter, syn] = await Promise.all([baseP, Promise.all(vsP), pairStats('counter', me), pairStats('synergy', me)]);
     if (id !== runId) return;
+    if (!Object.keys(base.map).length) { $('results').style.display = 'none'; setStatus($('status'), 'Ainda não há partidas suficientes com esse herói nesse filtro. Tente outro modo ou rank.', true); return; }
 
     /* matchups */
     const mu = [];
@@ -207,6 +215,8 @@ async function run() {
     for (const it of its) if (it.type === 'upgrade' && it.shopable && it.item_tier >= 1 && it.item_tier <= 4) items[it.id] = { name: it.name, tier: it.item_tier, cost: it.cost, slot: it.item_slot_type, img: it.shop_image_webp || it.image_webp || it.image || '' };
     state.me = state.me.filter(id => heroById[id]);
     $('rank').value = store.get('rank') || '';
+    $('mode').value = store.get('mode') || 'unranked';
+    syncRank();
     if (account) $('steam').value = account.input;
     active = nextActive(); renderSlots(); run();
   } catch (err) {

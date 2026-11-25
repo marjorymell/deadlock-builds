@@ -1,58 +1,74 @@
 # Deadlock Build Lab
 
-Ferramenta web que monta a build do seu herói no **Deadlock** adaptada ao time inimigo da partida, usando estatísticas sempre atualizadas da [deadlock-api.com](https://deadlock-api.com).
+[![Live site](https://img.shields.io/badge/live-GitHub%20Pages-d6aa5c)](https://marjorymell.github.io/deadlock-builds/)
+![JavaScript](https://img.shields.io/badge/javascript-vanilla-f7df1e)
+![No build step](https://img.shields.io/badge/build-none-lightgrey)
 
-## O que ela faz
+Builds for **Deadlock** adapted to the enemy team in your current match, so you know **which items to swap in** instead of following the same build every game.
 
-- **Build base:** os itens mais comprados com o seu herói, por tier.
-- **Itens contra este time:** itens que rendem acima do normal contra os inimigos da partida, com o motivo ("bom contra Haze, Wraith").
-- **Evite nesta partida:** itens comuns da build base que rendem pior contra esses inimigos.
-- **Matchups:** sua taxa de vitória contra cada inimigo e junto com cada aliado.
-- **Marcar forte:** durante a partida, olhe o placar (Tab) e marque os inimigos com mais souls. Eles passam a pesar 3× nas recomendações.
-- **Filtro de rank:** use só partidas de jogadores do seu nível.
+**[Open the live site →](https://marjorymell.github.io/deadlock-builds/)**
 
-## Como usar
+Hero and item stats come from [deadlock-api.com](https://deadlock-api.com), a free community API with millions of recent matches. Nothing is stored in the page: every lookup uses the latest data, so new patches, items and heroes show up on their own.
 
-1. Abra o site (ou o `index.html` no navegador).
-2. Escolha o seu herói (ele fica salvo para as próximas vezes).
-3. No início da partida, digite as primeiras letras de cada inimigo e aperte **Enter**.
-4. Durante a partida, use **Marcar forte** nos inimigos que estiverem à frente.
+## Features
 
-> A busca automática pela conta Steam só encontra partidas em destaque na aba "Assistir" do jogo, então na maioria das vezes a escolha dos heróis é manual.
+- **Items against this team.** Items that perform better than usual against the enemies in the match, with the reason (*good against Haze, Wraith*).
+- **Base build.** The most bought items for your hero, by tier.
+- **Avoid this match.** Common base-build items that do worse than usual against this team.
+- **Matchups.** Your hero's win rate against each enemy and with each ally.
+- **Mark as strong.** During the match, check the scoreboard (Tab) and mark the enemies with the most souls. They weigh 3× in the recommendations.
+- **Match mode filter.** Normal (unranked) matches by default, or ranked, or both. In ranked you can also filter by rank to use only matches from players around your level.
 
-## Como as recomendações são calculadas
-
-Para cada item, a ferramenta compara a taxa de vitória do item **contra cada inimigo** com a taxa de vitória dele **em geral** para o seu herói:
+## How it works
 
 ```
-lift = (vitória do item vs inimigo − vitória do item em geral)
-     − (média vs inimigo − média geral)
+your hero + enemy heroes ──► item stats per enemy ──► compare to baseline ──► ranked items per tier
 ```
 
-O resultado é suavizado pelo tamanho da amostra (itens com poucas partidas pesam menos) e combinado entre os inimigos, com peso 3 para os marcados como fortes.
-
-São dados de correlação das partidas dos últimos 30 dias: use como guia, não como regra.
-
-## Estrutura
+For each item, the page compares its win rate **against each enemy** with its win rate **in general** for your hero:
 
 ```
-deadlock-builds/
-├── index.html          # página
-├── assets/
-│   ├── css/style.css   # estilos
-│   └── js/app.js       # lógica e chamadas à API
-└── README.md
+lift = (item win rate vs enemy − item win rate overall)
+     − (average win rate vs enemy − average win rate overall)
 ```
 
-Sem dependências e sem build: é HTML, CSS e JavaScript puro.
+The second term removes the effect of the matchup itself: if your hero already wins more against that enemy, every item looks better there, and that is not the item's merit. The lift is then shrunk by sample size (`n / (n + 250)`), so items with few matches can't top the list by luck, and averaged across enemies, with weight 3 for the ones marked as strong.
 
-## Publicar no GitHub Pages
+## Usage
 
-1. Suba os arquivos para o repositório.
-2. Em **Settings → Pages**, escolha a branch `main` e a pasta `/ (root)`.
-3. O site fica em `https://marjorymell.github.io/deadlock-builds/`.
+1. Open the [live site](https://marjorymell.github.io/deadlock-builds/), or `index.html` in any browser.
+2. Pick your hero. It is remembered for next time.
+3. When the match starts, type the first letters of each enemy and press **Enter**.
+4. Mid-match, use **Mark as strong** on the enemies who are ahead.
 
-## Créditos
+To run it locally there is nothing to install:
 
-- Dados: [deadlock-api.com](https://deadlock-api.com)
-- Projeto não oficial, sem vínculo com a Valve. Deadlock é marca registrada da Valve Corporation.
+```bash
+git clone git@github.com:marjorymell/deadlock-builds.git
+cd deadlock-builds
+# open index.html in your browser
+```
+
+## Project structure
+
+```
+index.html            page layout
+assets/css/style.css  styles (dark theme, responsive down to phone width)
+assets/js/app.js      hero picker, API calls, scoring and rendering
+```
+
+## Limitations
+
+- **Heroes are picked by hand.** The game doesn't expose which match you are in. The *Find my match* button only finds matches listed in the in-game Watch tab (around the top 200), so most of the time you type the enemies yourself. Reading the match automatically would need an Overwolf app.
+- **Correlation, not causation.** Stats cover the last 30 days of matches. Right after a big patch they still mix in the old version for a few days.
+- **Differences are small.** Most items move win rate by 1–2 percentage points. Use the results as a guide, not a rule.
+- **Allies only affect matchups.** The API has no item stats split by ally.
+
+## Credits
+
+- Data: [deadlock-api.com](https://deadlock-api.com)
+- Unofficial project, not affiliated with Valve. Deadlock is a trademark of Valve Corporation.
+
+## License
+
+[MIT](LICENSE)
