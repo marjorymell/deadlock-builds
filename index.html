@@ -6,14 +6,15 @@
 <meta name="description" content="Builds de Deadlock adaptadas ao time inimigo, com dados atualizados da deadlock-api.">
 <title>Deadlock Build Lab</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css?v=4">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Bree+Serif&family=Barlow+Condensed:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css?v=6">
 </head>
 <body>
 <div class="wrap">
   <div class="top">
     <div>
-      <h1>Deadlock Build Lab</h1>
+      <p class="eyebrow">Deadlock · ferramenta de builds</p>
+      <h1>Build <mark>Lab</mark></h1>
       <p class="sub">Build base do seu herói + itens que funcionam melhor contra o time inimigo desta partida.</p>
     </div>
     <div class="row">
@@ -36,7 +37,8 @@
   </div>
 
   <div class="card">
-    <h2>Partida ao vivo</h2>
+    <p class="eyebrow">Opcional</p>
+    <h2>Partida <mark>ao vivo</mark></h2>
     <div class="row">
       <input id="steam" placeholder="Seu nome na Steam, link do perfil ou Steam ID" autocomplete="off">
       <button id="find" class="main">Buscar minha partida</button>
@@ -47,7 +49,8 @@
   </div>
 
   <div class="card">
-    <h2>Heróis da partida</h2>
+    <p class="eyebrow">Monte a partida</p>
+    <h2>Heróis da <mark>partida</mark></h2>
     <div class="teams">
       <div class="lbl">Você</div><div class="slots" id="s-me"></div>
       <div class="lbl">Aliados</div><div class="slots" id="s-ally"></div>
@@ -62,7 +65,8 @@
   </div>
 
   <div class="card" id="procard" style="display:none">
-    <h2>Build dos pros</h2>
+    <p class="eyebrow">Rank alto</p>
+    <h2>Build dos <mark>pros</mark></h2>
     <p class="hint" style="margin-top:0" id="prohint"></p>
     <div class="tiers three" id="pro"></div>
   </div>
@@ -71,23 +75,27 @@
 
   <div class="results" id="results">
     <div class="card">
-      <h2>Matchups</h2>
+      <p class="eyebrow">Taxa de vitória</p>
+      <h2><mark>Matchups</mark></h2>
       <div class="mu" id="mu"></div>
       <p class="hint">Taxa de vitória do seu herói contra cada inimigo e junto com cada aliado (todas as lanes).</p>
     </div>
     <div class="card">
-      <h2>Itens recomendados contra este time</h2>
+      <p class="eyebrow">Contra este time</p>
+      <h2>Itens <mark>recomendados</mark></h2>
       <div class="legend"><span><i style="background:var(--weapon)"></i>Arma</span><span><i style="background:var(--vitality)"></i>Vitalidade</span><span><i style="background:var(--spirit)"></i>Spirit</span><span>+pp = quanto o item ganha mais que o normal contra esses inimigos</span></div>
       <div class="tiers" id="counters"></div>
     </div>
     <div class="two">
       <div class="card">
-        <h2>Build base do herói</h2>
+        <p class="eyebrow">Mais comprados</p>
+        <h2>Build <mark>base</mark></h2>
         <p class="hint" style="margin-top:0">Os itens mais comprados com este herói, por tier.</p>
         <div class="tiers" id="base" style="grid-template-columns:repeat(2,minmax(0,1fr))"></div>
       </div>
       <div class="card">
-        <h2>Evite nesta partida</h2>
+        <p class="eyebrow">Rendem pior aqui</p>
+        <h2>Evite <mark class="bad">nesta partida</mark></h2>
         <p class="hint" style="margin-top:0">Itens comuns da build base que rendem pior que o normal contra esses inimigos.</p>
         <div id="avoid"></div>
       </div>
