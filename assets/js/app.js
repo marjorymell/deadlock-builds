@@ -158,9 +158,9 @@ async function runPro(me) {
     if (d.tot < 300) { d = await loadPro(me, 101); label = 'Ascendant e Eternus'; }
     if (id !== proRun) return;
     if (d.tot < 100) { $('prohint').textContent = 'Ainda não há partidas suficientes de jogadores de rank alto com este herói.'; $('pro').innerHTML = ''; return; }
-    const list = d.rows.filter(r => items[r.item_id] && r.matches / d.tot >= 0.25).sort((a, b) => a.avg_buy_time_s - b.avg_buy_time_s);
+    const list = d.rows.filter(r => items[r.item_id] && r.matches / d.tot >= 0.05);
     const phases = [['Início', 'até 10 min', 0, 600], ['Meio', '10 a 20 min', 600, 1200], ['Final', 'depois de 20 min', 1200, Infinity]];
-    $('prohint').textContent = `O que jogadores de rank ${label} compram com ${heroById[me].name}, na ordem em que costumam comprar. Baseado em ${d.tot.toLocaleString('pt-BR')} partidas ranqueadas dos últimos 30 dias.`;
+    $('prohint').textContent = `Os 6 itens mais comprados em cada fase por jogadores de rank ${label} com ${heroById[me].name}, na ordem em que costumam comprar. No final, os itens variam mais conforme a partida, por isso a % é menor. Baseado em ${d.tot.toLocaleString('pt-BR')} partidas ranqueadas dos últimos 30 dias.`;
     $('pro').innerHTML = phases.map(([name, sub, a, b]) => {
       const ph = list.filter(r => r.avg_buy_time_s >= a && r.avg_buy_time_s < b).sort((x, y) => y.matches - x.matches).slice(0, 6).sort((x, y) => x.avg_buy_time_s - y.avg_buy_time_s);
       return `<div class="tier"><h3>${name} · ${sub}</h3>${ph.map(r => itemRow(r.item_id, `${Math.round(r.matches / d.tot * 100)}%`, `~${Math.max(1, Math.round(r.avg_buy_time_s / 60))} min${r.sold / r.matches > 0.5 ? ' · vendem depois' : ''}`)).join('') || '<div class="hint">—</div>'}</div>`;
