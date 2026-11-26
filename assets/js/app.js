@@ -241,7 +241,7 @@ async function run() {
 (async () => {
   try {
     const [hs, its] = await Promise.all([getJ('/v1/assets/heroes?only_active=true'), getJ('/v1/assets/items')]);
-    heroes = hs.filter(h => h.player_selectable && !h.disabled && !h.in_development).map(h => ({ id: h.id, name: h.name, img: h.images?.icon_image_small_webp || h.images?.icon_image_small || '' })).sort((a, b) => a.name.localeCompare(b.name));
+    heroes = hs.filter(h => h.player_selectable && !h.disabled && (!h.in_development || h.development_state === 'release')).map(h => ({ id: h.id, name: h.name, img: h.images?.icon_image_small_webp || h.images?.icon_image_small || '' })).sort((a, b) => a.name.localeCompare(b.name));
     heroes.forEach(h => heroById[h.id] = h);
     for (const it of its) if (it.type === 'upgrade' && it.shopable && it.item_tier >= 1 && it.item_tier <= 4) items[it.id] = { name: it.name, tier: it.item_tier, cost: it.cost, slot: it.item_slot_type, img: it.shop_image_webp || it.image_webp || it.image || '' };
     state.me = state.me.filter(id => heroById[id]);
